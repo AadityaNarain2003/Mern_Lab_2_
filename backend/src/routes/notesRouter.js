@@ -5,16 +5,10 @@ const router = express.Router();
 
 router.get("/",getAllNotes);
 
-router.post("/",(req,res) => {
-    
-});
+router.post("/", createNotes);
 
-router.put("/:id",(req,res) => {
-    
-});
+router.put("/:id",updateNotes);
 
-router.delete("/:id",(req,res) => {
-    
-});
+router.delete("/:id",deleteNotes);
 
 export default router;

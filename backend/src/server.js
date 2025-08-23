@@ -1,10 +1,22 @@
 import express from "express";
+import dotenv from "dotenv";
 import router from "./routes/notesRouter.js";
 
-const app= express();
+dotenv.config(); // Load .env variables
 
-app.use("/api/notes",router);
+const app = express();
 
-app.listen(5001,() => {
-    console.log("Server started at Port 5001");
-});
+// Middleware
+app.use(express.json());
+app.use("/api/notes", router);
+
+const PORT = process.env.PORT || 5001;
+
+// Only start the server if NOT in test mode
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`Server started at Port ${PORT}`);
+  });
+}
+
+export default app; // Export app for tests
