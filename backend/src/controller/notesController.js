@@ -1,10 +1,17 @@
-import { v4 as uuidv4 } from "uuid";
-
-let notes = [];
+import Note from "../models/noteModel.js";
 
 // GET all notes
 export async function getAllNotes(req, res) {
-  res.status(200).json(notes);
+  try {
+    const notes = await Note.find(); // fetch from MongoDB
+    res.status(200).json(notes.map(note => ({
+      id: note._id,
+      title: note.title,
+      content: note.content
+    })));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
 
 // POST create note
@@ -13,9 +20,16 @@ export async function createNotes(req, res) {
   if (!title || !content)
     return res.status(400).json({ error: "Title and content required" });
 
-  const note = { id: uuidv4(), title, content };
-  notes.push(note);
-  res.status(201).json(note);
+  try {
+    const note = await Note.create({ title, content });
+    res.status(201).json({
+      id: note._id,
+      title: note.title,
+      content: note.content
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
 
 // PUT update note by id
@@ -23,27 +37,52 @@ export async function updateNotes(req, res) {
   const { id } = req.params;
   const { title, content } = req.body;
 
-  const index = notes.findIndex((note) => note.id === id);
-  if (index === -1) return res.status(404).json({ error: "Note not found" });
-
   if (!title || !content)
     return res.status(400).json({ error: "Title and content required" });
 
-  notes[index] = { id, title, content };
-  res.status(200).json(notes[index]);
+  try {
+    const note = await Note.findByIdAndUpdate(
+      id,
+      { title, content },
+      { new: true } // return updated document
+    );
+
+    if (!note) return res.status(404).json({ error: "Note not found" });
+
+    res.status(200).json({
+      id: note._id,
+      title: note.title,
+      content: note.content
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
 
 // DELETE note by id
 export async function deleteNotes(req, res) {
   const { id } = req.params;
 
-  const index = notes.findIndex((note) => note.id === id);
-  if (index === -1) return res.status(404).json({ error: "Note not found" });
+  try {
+    const note = await Note.findByIdAndDelete(id);
+    if (!note) return res.status(404).json({ error: "Note not found" });
 
-  const deletedNote = notes.splice(index, 1)[0];
-  res.status(200).json(deletedNote);
+    res.status(200).json({
+      id: note._id,
+      title: note.title,
+      content: note.content
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
 
-export async function resetNotes() {
-  notes = [];
+// Optional: reset all notes (for testing)
+export async function resetNotes(req, res) {
+  try {
+    await Note.deleteMany({});
+    res.status(200).json({ message: "All notes deleted" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }

@@ -17,15 +17,15 @@ const PORT = process.env.PORT || 5001;
 if (process.env.NODE_ENV !== "test") 
 {
 
-  //connectDB().then(() => {
-  //  app.listen(PORT, () => {
-  //    console.log("Server started on PORT:", PORT);
-  //  });
-  //});
-
-  app.listen(PORT, () => {
-    console.log("Server started on PORT:", PORT);
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log("Server started on PORT:", PORT);
+    });
   });
+
+  //app.listen(PORT, () => {
+  //  console.log("Server started on PORT:", PORT);
+  //});
 }
 
 export default app; // Export app for tests
