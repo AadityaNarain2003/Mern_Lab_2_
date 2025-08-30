@@ -1,16 +1,15 @@
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import About from './pages/About';
 import Contact from './pages/Contact';
 
 export default function App() {
   return (
-    <div>   
-      <nav style={{ marginBottom: '20px' }}>
-        <Link to="/">Home</Link> | 
-        <Link to="/about"> About</Link> | 
-        <Link to="/contact"> Contact</Link>
-      </nav>
+    <div>
+      <Navbar />
+      <Navbar />
+      <Navbar />
 
       <Routes>
         <Route path="/" element={<Home />} />
